@@ -7,6 +7,7 @@
         public string LastName { get; set; }
         public string Email { get; set; }
 
+        //List of all the users comments?
 
         //Favorite Genre?
         //Favortite Shows?
