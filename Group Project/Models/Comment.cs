@@ -8,7 +8,9 @@ namespace Group_Project.Models
 
         //Foreign Key to connect comment to show/movie?
         public int MediaID { get; set; }
-        //If a given comment has a reply
+        public string Text { get; set; }
+
+        //If a given comment has a reply?
         //public LinkedList<Comment> Replies { get; set; }
     }
 }

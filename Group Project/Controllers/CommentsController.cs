@@ -54,7 +54,7 @@ namespace Group_Project.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,MediaID")] Comment comment)
+        public async Task<IActionResult> Create([Bind("Id,MediaID,Text")] Comment comment)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace Group_Project.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,MediaID")] Comment comment)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,MediaID,Text")] Comment comment)
         {
             if (id != comment.Id)
             {

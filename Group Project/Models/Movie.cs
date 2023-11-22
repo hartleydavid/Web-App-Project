@@ -3,8 +3,17 @@ using System.Collections.Generic;
 
 namespace Group_Project.Models
 {
-    public class Movie : Media
+    public class Movie : IMedia
     {
+        //Image object?
+
+        /**
+         * 50ec474a2af5a633e519c55f84f1a010
+         * 
+         * eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs
+         */
+
+
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -12,7 +21,9 @@ namespace Group_Project.Models
         public DateTime ReleaseDate { get; set; }
         public int BoxOfficeTotal { get; set; }
         public int IMBDScore { get; set; }
-        public LinkedList<Comment> Comments { get; set; }
+
+        //SQL keys instead of an object?
+        // public LinkedList<Comment> Comments { get; set; }
 
     }
 }
