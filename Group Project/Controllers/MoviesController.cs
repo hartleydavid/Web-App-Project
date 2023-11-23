@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Group_Project.Data;
 using Group_Project.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+
+using RestSharp;
+using System.Globalization;
 
 namespace Group_Project.Controllers
 {
@@ -19,11 +25,83 @@ namespace Group_Project.Controllers
             _context = context;
         }
 
-        // GET: Movies
+
+
         public async Task<IActionResult> Index()
         {
+
+            var options = new RestClientOptions("https://api.themoviedb.org/3/trending/movie/week?language=en-US");
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
+            var response = await client.GetAsync(request);
+
+            //Console.WriteLine("{0}", response.Content);
+
+            // Deserialize the API response to C# objects
+            dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
+
+            // Process and save data to the database
+            foreach (var movie in ApiData.results)
+            {
+                
+                // Create a new Movie entity and populate its properties
+                var newMovie = new Movie
+                {
+                    Title = movie.title,
+                    Description = movie.overview,
+                    ReleaseDate = DateTime.ParseExact(movie.releaseDate, "yyyy-mm-dd", CultureInfo.InvariantCulture),
+                    IMBDScore = movie.vote_average,
+
+                    // Add other properties as needed
+                };
+
+                // Add the new movie to the context
+                _context.Movie.Add(newMovie);
+            }
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
             return View(await _context.Movie.ToListAsync());
         }
+
+        //string ApiUrl = "https://api.themoviedb.org/3/movie/550?api_key=50ec474a2af5a633e519c55f84f1a010";
+        // GET: Movies
+      /*  public async Task<IActionResult> Index()
+        {
+            List<Movie> movies = new List<Movie>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ApiUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //Sending request to find web api REST service resource GetAllEmployees using HttpClient
+                HttpResponseMessage Res = await client.GetAsync("api/Employee/GetAllEmployees");
+                //Checking the response is successful or not which is sent using HttpClient
+                if (Res.IsSuccessStatusCode)
+                {
+                    //Storing the response details recieved from web api
+                    var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                    //Deserializing the response recieved from web api and storing into the Employee list
+                    movies = JsonConvert.DeserializeObject<List<Movie>>(EmpResponse);
+                }
+                //returning the employee list to view
+                return View(movies);
+            }
+
+            //return View(await _context.Movie.ToListAsync());
+        }*/
+
+        //Original
+        /*public async Task<IActionResult> Index()
+        {
+            //https://api.themoviedb.org/3/movie/550?api_key=50ec474a2af5a633e519c55f84f1a010
+
+            return View(await _context.Movie.ToListAsync());
+        }*/
 
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
