@@ -19,8 +19,12 @@ namespace Group_Project.Models
         public string Description { get; set; }
         public string Genre { get; set; }
         public DateTime ReleaseDate { get; set; }
+        public string FormattedReleaseDate
+        {
+            get { return ReleaseDate.ToString("yyyy-MM-dd"); }
+        }
         public int BoxOfficeTotal { get; set; }
-        public int IMBDScore { get; set; }
+        public double IMBDScore { get; set; }
 
         //SQL keys instead of an object?
         // public LinkedList<Comment> Comments { get; set; }

@@ -14,7 +14,7 @@ namespace Group_Project.Models
         public DateTime ReleaseDate { get; set; }
         //SQL keys instead of an object?
         //public LinkedList<Comment> Comments { get; set; }
-        public int IMBDScore { get; set; }
+        public double IMBDScore { get; set; }
         public int Seasons { get; set; }
         public int Episodes { get; set; }
 

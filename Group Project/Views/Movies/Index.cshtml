@@ -8,7 +8,9 @@
 
 <p>
     <a asp-action="Create">Create New</a>
+    <a asp-action="RemoveAllRecords">Wipe Database</a> |
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -46,7 +48,7 @@
                 @Html.DisplayFor(modelItem => item.Genre)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
+                @Html.DisplayFor(modelItem => item.FormattedReleaseDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.BoxOfficeTotal)
@@ -54,11 +56,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.IMBDScore)
             </td>
-            <td>
+            <!--<td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            </td>-->
         </tr>
 }
     </tbody>

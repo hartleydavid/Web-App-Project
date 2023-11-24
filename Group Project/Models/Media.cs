@@ -10,7 +10,7 @@ namespace Group_Project.Models
         string Description { get; }
         string Genre { get; }
         DateTime ReleaseDate { get; }
-        int IMBDScore { get; }
+        double IMBDScore { get; }
 
         //SQL keys instead of an object?
         //LinkedList<Comment> Comments { get; set; }
