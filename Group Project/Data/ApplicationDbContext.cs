@@ -10,7 +10,8 @@ namespace Group_Project.Data
     public class ApplicationDbContext : IdentityDbContext
     {
 
-        public DbSet<Show> Shows { get; set; }
+       // public DbSet<Show> Shows { get; set; }
+        //public DbSet<User> Users { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -19,5 +20,7 @@ namespace Group_Project.Data
         }
         public DbSet<Group_Project.Models.Show> Show { get; set; }
         public DbSet<Group_Project.Models.User> User { get; set; }
+        public DbSet<Group_Project.Models.Movie> Movie { get; set; }
+        public DbSet<Group_Project.Models.Comment> Comment { get; set; }
     }
 }

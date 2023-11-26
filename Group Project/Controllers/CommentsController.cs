@@ -10,22 +10,22 @@ using Group_Project.Models;
 
 namespace Group_Project.Controllers
 {
-    public class ShowsController : Controller
+    public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ShowsController(ApplicationDbContext context)
+        public CommentsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Shows
+        // GET: Comments
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Show.ToListAsync());
+            return View(await _context.Comment.ToListAsync());
         }
 
-        // GET: Shows/Details/5
+        // GET: Comments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +33,39 @@ namespace Group_Project.Controllers
                 return NotFound();
             }
 
-            var show = await _context.Show
+            var comment = await _context.Comment
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (show == null)
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            return View(show);
+            return View(comment);
         }
 
-        // GET: Shows/Create
+        // GET: Comments/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Shows/Create
+        // POST: Comments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Genre,ReleaseDate,IMBDScore,Seasons,Episodes")] Show show)
+        public async Task<IActionResult> Create([Bind("Id,MediaID,Text")] Comment comment)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(show);
+                _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(show);
+            return View(comment);
         }
 
-        // GET: Shows/Edit/5
+        // GET: Comments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +73,22 @@ namespace Group_Project.Controllers
                 return NotFound();
             }
 
-            var show = await _context.Show.FindAsync(id);
-            if (show == null)
+            var comment = await _context.Comment.FindAsync(id);
+            if (comment == null)
             {
                 return NotFound();
             }
-            return View(show);
+            return View(comment);
         }
 
-        // POST: Shows/Edit/5
+        // POST: Comments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Genre,ReleaseDate,IMBDScore,Seasons,Episodes")] Show show)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,MediaID,Text")] Comment comment)
         {
-            if (id != show.Id)
+            if (id != comment.Id)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace Group_Project.Controllers
             {
                 try
                 {
-                    _context.Update(show);
+                    _context.Update(comment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ShowExists(show.Id))
+                    if (!CommentExists(comment.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +113,10 @@ namespace Group_Project.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(show);
+            return View(comment);
         }
 
-        // GET: Shows/Delete/5
+        // GET: Comments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,30 +124,30 @@ namespace Group_Project.Controllers
                 return NotFound();
             }
 
-            var show = await _context.Show
+            var comment = await _context.Comment
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (show == null)
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            return View(show);
+            return View(comment);
         }
 
-        // POST: Shows/Delete/5
+        // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var show = await _context.Show.FindAsync(id);
-            _context.Show.Remove(show);
+            var comment = await _context.Comment.FindAsync(id);
+            _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ShowExists(int id)
+        private bool CommentExists(int id)
         {
-            return _context.Show.Any(e => e.Id == id);
+            return _context.Comment.Any(e => e.Id == id);
         }
     }
 }

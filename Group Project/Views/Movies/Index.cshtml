@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Group_Project.Models.Show>
+﻿@model IEnumerable<Group_Project.Models.Movie>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,7 +8,9 @@
 
 <p>
     <a asp-action="Create">Create New</a>
+    <a asp-action="RemoveAllRecords">Wipe Database</a> |
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -25,13 +27,10 @@
                 @Html.DisplayNameFor(model => model.ReleaseDate)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.BoxOfficeTotal)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.IMBDScore)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Seasons)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Episodes)
             </th>
             <th></th>
         </tr>
@@ -49,22 +48,19 @@
                 @Html.DisplayFor(modelItem => item.Genre)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
+                @Html.DisplayFor(modelItem => item.FormattedReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BoxOfficeTotal)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IMBDScore)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Seasons)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Episodes)
-            </td>
-            <td>
+            <!--<td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            </td>-->
         </tr>
 }
     </tbody>
