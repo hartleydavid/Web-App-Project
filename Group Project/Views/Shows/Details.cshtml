@@ -11,6 +11,12 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageSrc)
+        </dt>
+        <dd class = "col-sm-10">
+              <img src="@Html.DisplayFor(model => model.ImageSrc)" alt="Show Image" width="600" height="700" />
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Title)
         </dt>
         <dd class = "col-sm-10">
@@ -32,7 +38,13 @@
             @Html.DisplayNameFor(model => model.ReleaseDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReleaseDate)
+            @Html.DisplayFor(model => model.FormattedReleaseDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LastAirDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FormattedLastAirDate)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IMBDScore)
@@ -55,6 +67,5 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
