@@ -12,8 +12,16 @@ namespace Group_Project.Models
         public string Description { get; set; }
         public string Genre { get; set; }
         public DateTime ReleaseDate { get; set; }
-        //SQL keys instead of an object?
-        //public LinkedList<Comment> Comments { get; set; }
+        public DateTime LastAirDate { get; set; }
+        public string FormattedReleaseDate
+        {
+            get { return ReleaseDate.ToString("yyyy-MM-dd"); }
+        }
+        public string FormattedLastAirDate
+        {
+            get { return LastAirDate.ToString("yyyy-MM-dd"); }
+        }
+        public string ImageSrc { get; set; }
         public double IMBDScore { get; set; }
         public int Seasons { get; set; }
         public int Episodes { get; set; }

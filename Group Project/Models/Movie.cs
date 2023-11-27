@@ -5,7 +5,6 @@ namespace Group_Project.Models
 {
     public class Movie : IMedia
     {
-        //Image object?
 
         /**
          * 50ec474a2af5a633e519c55f84f1a010
@@ -19,20 +18,13 @@ namespace Group_Project.Models
         public string Description { get; set; }
         public string Genre { get; set; }
         public DateTime ReleaseDate { get; set; }
-
-        public byte[] Image { get; set; } = Array.Empty<byte>();
-
-        public string ImageSrc { get; set; }
-
         public string FormattedReleaseDate
         {
             get { return ReleaseDate.ToString("yyyy-MM-dd"); }
         }
+        public string ImageSrc { get; set; }
         public int BoxOfficeTotal { get; set; }
         public double IMBDScore { get; set; }
-
-        //SQL keys instead of an object?
-        // public LinkedList<Comment> Comments { get; set; }
 
     }
 }
