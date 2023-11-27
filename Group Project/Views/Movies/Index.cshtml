@@ -15,6 +15,9 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
@@ -38,6 +41,12 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+             <th>
+                <a href="@Url.Action("Details", new { id = item.Id })">
+                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Movie Image" width="300" height="400" />
+                </a>
+            </th>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
@@ -56,11 +65,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.IMBDScore)
             </td>
-            <!--<td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>-->
+
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </td>
+
         </tr>
 }
     </tbody>
