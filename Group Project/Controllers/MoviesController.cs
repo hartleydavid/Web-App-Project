@@ -25,27 +25,34 @@ namespace Group_Project.Controllers
             _context = context;
         }
       
+        /** Method will search through the genre array from the API
+         * and parse the data into a string listing each genre.
+         * Removes the trailing comma on method return
+         * 
+         * @param dynamic genreList: The list of genres from the API
+         * @returns: A string of all the genres from the list.
+         *          Example: Drama, Horror, Action
+         */
         public string GetGenresString (dynamic genreList)
         {
             string myGenres = "";
+            //Foreach value in the list
             foreach(var genre in genreList)
             {
+                //Add the value to the string
                 myGenres += genre.name + ", ";
-
             }
+            //Return genres
             return myGenres[0..^2];
-
         }
 
-        private async Task<byte[]> GetImage(string imageUrl)
-        {
-            using HttpClient client = new HttpClient();
-            //Return the byte[] version of the image
-            return await client.GetByteArrayAsync(imageUrl);
-            
-        }
+        /**
+         * 
+         * 
+         * */
         public async Task<Movie> CreateMovie(int movieID) 
         {
+            //Pull top level data from the API on the given movie id
             string apiPath = "https://api.themoviedb.org/3/movie/" + movieID + "?language=en-US";
             Console.Write("Entering string {0}", apiPath);
             var options = new RestClientOptions(apiPath);
@@ -55,8 +62,10 @@ namespace Group_Project.Controllers
             request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
             var response = await client.GetAsync(request);
 
+            //Convert to useable data
             dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
+            //Pull the data that we need
             var newMovie = new Movie
             {
                 Title = ApiData.title,
@@ -66,8 +75,6 @@ namespace Group_Project.Controllers
                 IMBDScore = ApiData.vote_average,
                 BoxOfficeTotal = ApiData.revenue,
                 ImageSrc = "https://image.tmdb.org/t/p/original" + ApiData.poster_path,
-                //Get the poster image as the image path       
-                //Image = await GetImage("https://image.tmdb.org/t/p/original" + ApiData.poster_path)
             };
 
             return newMovie;
@@ -75,68 +82,36 @@ namespace Group_Project.Controllers
 
         public async Task<IActionResult> Index()
         {
-            try
+           
+            //Loop to have multiple pages?
+            var options = new RestClientOptions("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1");
+            var client = new RestClient(options);
+            var request = new RestRequest("");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
+            var response = await client.GetAsync(request);
+
+
+            // Deserialize the API response to C# objects
+            dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
+
+            // Process and save data to the database
+            foreach (var movie in ApiData.results)
             {
-                await RemoveAllRecords();
-
-                //Loop to have multiple pages?
-                var options = new RestClientOptions("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1");
-                var client = new RestClient(options);
-                var request = new RestRequest("");
-                request.AddHeader("accept", "application/json");
-                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
-                var response = await client.GetAsync(request);
-
-
-                // Deserialize the API response to C# objects
-                dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
-
-                List<Movie> newMovies = new List<Movie>();
-
-                // Process and save data to the database
-                foreach (var movie in ApiData.results)
+                //If this is a new movie, add it to the DB
+                if (IsNewMovie((string)movie.title, (string)movie.overview))
                 {
-                    //If this is a new movie, add it to the DB
-                    if (IsNewMovie((string)movie.title, (string)movie.overview))
-                    {
-                        Movie newMovie = await CreateMovie((int)movie.id);
-                        // Add the new movie to the context
-                        newMovies.Add(newMovie);
-                        //_context.Movie.Add(newMovie);
-                    }
+                    Movie newMovie = await CreateMovie((int)movie.id);
+                    // Add the new movie to the context
+                    _context.Movie.Add(newMovie);
                 }
-
-
-                _context.Movie.AddRange(newMovies);
-                // Save changes to the database
-                await _context.SaveChangesAsync();//.ConfigureAwait(false);
-
-                return View(await _context.Movie.ToListAsync());
-            }
-            catch (Exception ex)
-            {
-                return View("Home");
-            }
-        }
-
-        // Controller action to display the image
-        public async Task<IActionResult> DisplayImage(int id)
-        {
-            var movie = await _context.Movie.FindAsync(id);
-
-            if (movie == null || movie.Image == null)
-            {
-                // Handle the case where the movie or image is not found
-                return Content("Image not found");
             }
 
-            // Convert the byte array to a base64 string
-            string base64String = Convert.ToBase64String(movie.Image);
-            string imageUrl = $"data:image/jpeg;base64,{base64String}";
 
-            ViewBag.ImageUrl = imageUrl;
+            // Save changes to the database
+            await _context.SaveChangesAsync();//.ConfigureAwait(false);
 
-            return View();
+            return View(await _context.Movie.ToListAsync());
         }
 
         // GET: Movies/Details/5

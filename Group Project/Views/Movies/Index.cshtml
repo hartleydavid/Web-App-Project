@@ -7,7 +7,6 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
     <a asp-action="RemoveAllRecords">Wipe Database</a> |
 </p>
 
@@ -15,23 +14,23 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+                @Html.DisplayNameFor(model => model.ImageSrc)
             </th>
-            <th>
+            <!--<th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
-            </th>
+            </th>-->
             <th>
                 @Html.DisplayNameFor(model => model.Genre)
             </th>
-            <th>
+            <!--<th>
                 @Html.DisplayNameFor(model => model.ReleaseDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.BoxOfficeTotal)
-            </th>
+            </th>-->
             <th>
                 @Html.DisplayNameFor(model => model.IMBDScore)
             </th>
@@ -47,29 +46,24 @@
                 </a>
             </th>
 
-            <td>
+            <!--<td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
-            </td>
+            </td>-->
             <td>
                 @Html.DisplayFor(modelItem => item.Genre)
             </td>
-            <td>
+            <!--<td>
                 @Html.DisplayFor(modelItem => item.FormattedReleaseDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.BoxOfficeTotal)
-            </td>
+            </td>-->
             <td>
                 @Html.DisplayFor(modelItem => item.IMBDScore)
             </td>
-
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-            </td>
-
         </tr>
 }
     </tbody>
