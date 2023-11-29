@@ -14,6 +14,6 @@ namespace Group_Project.Models
         public string ImageSrc { get; set; }
 
         //SQL keys instead of an object?
-        // public LinkedList<Comment> Comments { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }

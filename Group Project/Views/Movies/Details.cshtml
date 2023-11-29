@@ -52,8 +52,37 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.IMBDScore)
         </dd>
+        <!-- Add Comment Form -->
+        <form asp-action="AddComment" method="post">
+            <input type="hidden" asp-for="Id" />
+            <label for="Comment">Add your comment:</label>
+            <textarea name="Comment" required></textarea>
+            <button type="submit">Submit Comment</button>
+        </form>
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Comments)
+        </dt>
+
+       
     </dl>
 </div>
+
+@if (Model.Comments != null && Model.Comments.Any())
+{
+    <ul>
+        @foreach (var comment in Model.Comments)
+        {
+            <li>
+                @comment.Text
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No comments yet.</p>
+}
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

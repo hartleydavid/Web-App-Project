@@ -11,6 +11,7 @@ using Group_Project.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Group_Project.Controllers
 {
@@ -97,11 +98,13 @@ namespace Group_Project.Controllers
                 Seasons = ApiData.number_of_seasons,
                 Episodes = ApiData.number_of_episodes,
                 ImageSrc = "https://image.tmdb.org/t/p/original" + ApiData.poster_path,
+                Comments = new List<Comment>(),
             };
 
             return newShow;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index()
         {
 
@@ -136,6 +139,8 @@ namespace Group_Project.Controllers
             return View(await _context.Show.ToListAsync());
         }
 
+        [Authorize]
+
         // GET: Shows/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -152,113 +157,6 @@ namespace Group_Project.Controllers
             }
 
             return View(show);
-        }
-
-        // GET: Shows/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Shows/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Genre,ReleaseDate,IMBDScore,Seasons,Episodes")] Show show)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(show);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(show);
-        }
-
-        // GET: Shows/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var show = await _context.Show.FindAsync(id);
-            if (show == null)
-            {
-                return NotFound();
-            }
-            return View(show);
-        }
-
-        // POST: Shows/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Genre,ReleaseDate,IMBDScore,Seasons,Episodes")] Show show)
-        {
-            if (id != show.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(show);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ShowExists(show.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(show);
-        }
-
-        // GET: Shows/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var show = await _context.Show
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (show == null)
-            {
-                return NotFound();
-            }
-
-            return View(show);
-        }
-
-        // POST: Shows/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var show = await _context.Show.FindAsync(id);
-            _context.Show.Remove(show);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ShowExists(int id)
-        {
-            return _context.Show.Any(e => e.Id == id);
         }
 
         private bool IsNewShow(string title, string description)

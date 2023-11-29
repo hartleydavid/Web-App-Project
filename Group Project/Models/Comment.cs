@@ -10,7 +10,8 @@ namespace Group_Project.Models
         public int MediaID { get; set; }
         public string Text { get; set; }
 
-        //If a given comment has a reply?
-        //public LinkedList<Comment> Replies { get; set; }
+        //User
+        //Date Posted
+
     }
 }
