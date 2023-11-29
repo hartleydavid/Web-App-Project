@@ -51,38 +51,66 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.IMBDScore)
-        </dd>
-        <!-- Add Comment Form -->
-        <form asp-action="AddComment" method="post">
-            <input type="hidden" asp-for="Id" />
-            <label for="Comment">Add your comment:</label>
-            <textarea name="Comment" required></textarea>
-            <button type="submit">Submit Comment</button>
-        </form>
-
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Comments)
-        </dt>
-
-       
-    </dl>
+        </dd>  
+    </dl> <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Comments)
+    </dt>
 </div>
 
-@if (Model.Comments != null && Model.Comments.Any())
-{
-    <ul>
-        @foreach (var comment in Model.Comments)
-        {
-            <li>
-                @comment.Text
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <p>No comments yet.</p>
-}
+<!-- Comment Section Style -->
+<style>
+    .comment-section {
+        text-align: center;
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+    .comments-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .comments-list li {
+        text-align: left;
+        margin-bottom: 15px; /* Adjust the whitespace between comments */
+    }
+
+    textarea {
+        width: 80%; /* Adjust the size of the comment box */
+        margin-bottom: 10px;
+    }
+</style>
+
+<!-- Comment Section -->
+<div class="comment-section">
+    <form asp-action="AddComment" method="post">
+        <input type="hidden" asp-for="Id" />
+        <label for="Comment">Add your comment:</label>
+        <br>
+        <textarea name="Comment" required></textarea>
+        <br>
+        <button type="submit">Submit Comment</button>
+    </form>
+
+    <br>
+    @Html.DisplayNameFor(model => model.Comments)
+    @if (Model.Comments != null && Model.Comments.Any())
+    {
+        <ul class="comments-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <li>
+                    @comment.Text <p align="right"><a asp-action="RemoveComment">Remove Comment</a></p>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No comments yet.</p>
+    }
+</div>
+
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

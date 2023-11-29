@@ -127,13 +127,12 @@ namespace Group_Project.Controllers
             }
 
             var movie = await _context.Movie
+                .Include(m => m.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
                 return NotFound();
             }
-
-
 
             return View(movie);
         }
@@ -172,6 +171,32 @@ namespace Group_Project.Controllers
 
             return View("Details", movie);
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveComment(int id)
+        {
+            // Find the comment by its ID
+            var comment = await _context.Comment.FindAsync(id);
+
+            //Get the movie
+            var movie = await _context.Movie
+               .Include(m => m.Comments)
+               .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            movie.Comments.Remove(comment);
+
+            _context.Comment.Remove(comment);
+            await _context.SaveChangesAsync();
+
+            return View("Details", movie);
+        }
+
         public async Task<IActionResult> RemoveAllRecords()
         {
             try
