@@ -26,6 +26,8 @@ namespace Group_Project.Models
         public int Seasons { get; set; }
         public int Episodes { get; set; }
 
+        public List<Comment> Comments { get; set; }
+
 
     }
 }
