@@ -73,6 +73,17 @@
     .comments-list li {
         text-align: left;
         margin-bottom: 15px; /* Adjust the whitespace between comments */
+        overflow: auto; /* Clear the float to prevent layout issues */
+    }
+
+    .comment-text {
+        float: left;
+        width: 70%;
+    }
+
+    .comment-actions {
+        float: right;
+        width: 30%;
     }
 
     textarea {
@@ -100,7 +111,15 @@
             @foreach (var comment in Model.Comments)
             {
                 <li>
-                    @comment.Text <p align="right"><a asp-action="RemoveComment">Remove Comment</a></p>
+                    <div class="comment-text">
+                        @comment.Text 
+                    </div>
+                    <div class="comment-actions" align="right">
+                        <form asp-action="RemoveComment" method="post">
+                            <input type="hidden" name="commentId" value="@comment.Id" />
+                            <button type="submit">Remove Comment</button>
+                        </form>
+                    </div>
                 </li>
             }
         </ul>
