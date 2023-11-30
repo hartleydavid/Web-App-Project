@@ -24,6 +24,7 @@ namespace Group_Project.Controllers
             _context = context;
         }
 
+        //Used in testing
         public async Task<IActionResult> RemoveAllRecords()
         {
             try
@@ -38,7 +39,7 @@ namespace Group_Project.Controllers
                 await _context.SaveChangesAsync();
 
                 // Optionally, redirect to another action or return a success message
-                return RedirectToAction("Index", "Movies"); // Redirect to the home page, adjust as needed
+                return RedirectToAction("Index", "Shows"); // Redirect to the home page, adjust as needed
             }
             catch (Exception ex)
             {
@@ -68,10 +69,12 @@ namespace Group_Project.Controllers
             return myGenres[0..^2];
         }
 
-        /**
-         * 
-         * 
-         * */
+        /** Creates a show object that is the showID's value in the TMDB API
+         * Will pull all the needed data for the given show and create the show object 
+         * and return it.
+         * @param int showID: The ID of the show we want to get top level details of from the API
+         * @Return The new show of the showID
+         */
         public async Task<Show> CreateShow(int showID)
         {
             //Pull top level data from the API on the given show id
@@ -104,6 +107,10 @@ namespace Group_Project.Controllers
             return newShow;
         }
 
+        /** Method will pull shows from the TMBD API and populate our database when the user opens the index view
+         * Function gets called when the index view is called for in the website.
+         * Requires users to be logged in to view the data
+         */
         [Authorize]
         public async Task<IActionResult> Index()
         {
@@ -126,7 +133,6 @@ namespace Group_Project.Controllers
                 //If this is a new show, add it to the DB
                 if (IsNewShow((string)show.title, (string)show.overview))
                 {
-                    //Show newShow = ;
                     // Add the new show to the context
                     _context.Show.Add(await CreateShow((int)show.id));
                 }
@@ -138,10 +144,11 @@ namespace Group_Project.Controllers
 
             return View(await _context.Show.ToListAsync());
         }
-
+        /** Template Details View from scaffolded objects
+         * Added .Include() function call for the context of our model
+         * Requires users to be logged in to view the data
+         */
         [Authorize]
-
-        // GET: Shows/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -159,6 +166,91 @@ namespace Group_Project.Controllers
             return View(show);
         }
 
+        /** Method will add a comment to the respective show that the user is currently on
+         * @param int id: The ID of the show that we will add the comment to
+         * @param string comment: The comment that was added to the show
+         */
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddComment(int id, string comment)
+        {
+            //Get the show
+            var show = await _context.Show
+               .Include(m => m.Comments)
+               .FirstOrDefaultAsync(m => m.Id == id);
+
+            //Assert != null
+            if (show == null)
+            {
+                return NotFound();
+            }
+
+            //Create a new comment object 
+            var newComment = new Comment
+            {
+                MediaID = id,
+                Text = comment
+            };
+
+            // Ensure that the Comments collection is initialized
+            if (show.Comments == null)
+            {
+                show.Comments = new List<Comment>();
+            }
+
+            //Add the comments
+            show.Comments.Add(newComment);
+            _context.Comment.Add(newComment);
+            _context.SaveChanges();
+
+            //Return the updated view
+            return View("Details", show);
+        }
+
+        /** Method will remove a comment to the respective show that the user is currently on
+         * @param int id: The ID of the comment we are going to remove
+         */
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveComment(int commentId)
+        {
+
+            // Find the comment by its ID
+            var comment = await _context.Comment.FindAsync(commentId);
+
+            //Assert not null
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            //Get the show by the mediaID from the comment
+            var show = await _context.Show
+               .Include(m => m.Comments)
+               .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
+
+            //Assert not null
+            if (show == null)
+            {
+                return NotFound();
+            }
+
+            //Remove comments
+            show.Comments.Remove(comment);
+            _context.Comment.Remove(comment);
+            await _context.SaveChangesAsync();
+
+            //Return updated view
+            return View("Details", show);
+        }
+
+        /** Method will test if the given show is a new show in our database
+         * Does this by seeing if the title and desctiption are already in the database
+         * @Param string title: The title of the show
+         * @Param string description: The description of the show
+         * @Returns True if the show is new
+         *          False if the show is already in the DB
+         **/
         private bool IsNewShow(string title, string description)
         {
             return !_context.Show.Any(e => e.Title.Equals(title) && e.Description.Equals(description));
