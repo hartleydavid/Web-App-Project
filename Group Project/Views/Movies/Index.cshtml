@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Group_Project.Models.Show>
+﻿@model IEnumerable<Group_Project.Models.Movie>
 
 @{
     ViewData["Title"] = "Index";
@@ -29,16 +29,10 @@
                 @Html.DisplayNameFor(model => model.ReleaseDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastAirDate)
+                @Html.DisplayNameFor(model => model.BoxOfficeTotal)
             </th>-->
             <th>
                 @Html.DisplayNameFor(model => model.IMBDScore)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Seasons)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Episodes)
             </th>
             <th></th>
         </tr>
@@ -46,11 +40,12 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <th>
+             <th>
                 <a href="@Url.Action("Details", new { id = item.Id })">
-                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Show Image" width="300" height="400" />
+                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Movie Image" width="300" height="400" />
                 </a>
             </th>
+
             <!--<td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
@@ -64,16 +59,10 @@
                 @Html.DisplayFor(modelItem => item.FormattedReleaseDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FormattedLastAirDate)
+                @Html.DisplayFor(modelItem => item.BoxOfficeTotal)
             </td>-->
             <td>
                 @Html.DisplayFor(modelItem => item.IMBDScore)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Seasons)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Episodes)
             </td>
         </tr>
 }

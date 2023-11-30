@@ -4,14 +4,16 @@ using Group_Project.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Group_Project.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231122001842_ModelUpdates")]
+    partial class ModelUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,20 +31,10 @@ namespace Group_Project.Data.Migrations
                     b.Property<int>("MediaID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ShowId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("ShowId");
 
                     b.ToTable("Comment");
                 });
@@ -63,11 +55,8 @@ namespace Group_Project.Data.Migrations
                     b.Property<string>("Genre")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("IMBDScore")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ImageSrc")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("IMBDScore")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
@@ -96,14 +85,8 @@ namespace Group_Project.Data.Migrations
                     b.Property<string>("Genre")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("IMBDScore")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ImageSrc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastAirDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("IMBDScore")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
@@ -338,17 +321,6 @@ namespace Group_Project.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Group_Project.Models.Comment", b =>
-                {
-                    b.HasOne("Group_Project.Models.Movie", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("MovieId");
-
-                    b.HasOne("Group_Project.Models.Show", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("ShowId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
