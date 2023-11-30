@@ -47,15 +47,16 @@ namespace Group_Project.Controllers
             return myGenres[0..^2];
         }
 
-        /**
-         * 
-         * 
-         * */
+        /** Creates a movie object that is the movieID's value in the TMDB API
+         * Will pull all the needed data for the given movie and create the movie object 
+         * and return it.
+         * @param int MovieID: The ID of the movie we want to get top level details of from the API
+         * @Return The new movie of the movieID
+         */
         public async Task<Movie> CreateMovie(int movieID) 
         {
             //Pull top level data from the API on the given movie id
             string apiPath = "https://api.themoviedb.org/3/movie/" + movieID + "?language=en-US";
-            Console.Write("Entering string {0}", apiPath);
             var options = new RestClientOptions(apiPath);
             var client = new RestClient(options);
             var request = new RestRequest("");
@@ -78,22 +79,26 @@ namespace Group_Project.Controllers
                 ImageSrc = "https://image.tmdb.org/t/p/original" + ApiData.poster_path,
                 Comments = new List<Comment>(),
             };
-
+            //Return the new movie
             return newMovie;
         }
 
+        /** Method will pull movies from the TMBD API and populate our database when the user opens the index view
+         * Function gets called when the index view is called for in the website.
+         * Requires users to be logged in to view the data
+         */
         [Authorize]
         public async Task<IActionResult> Index()
-        {
-           
-            //Loop to have multiple pages?
+        {         
+            //Loop to have multiple pages? (Can pull more movies if wanted)
+
+            //Pull the top rated movies list from the API
             var options = new RestClientOptions("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1");
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
             request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
             var response = await client.GetAsync(request);
-
 
             // Deserialize the API response to C# objects
             dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -113,31 +118,42 @@ namespace Group_Project.Controllers
             // Save changes to the database
             await _context.SaveChangesAsync();//.ConfigureAwait(false);
 
+            //Return the the view of the movies index
             return View(await _context.Movie.ToListAsync());
         }
 
-        // GET: Movies/Details/5
+        /** Template Details View from scaffolded objects
+         * Added .Include() function call for the context of our model
+         * Requires users to be logged in to view the data
+         */
         [Authorize]
-
         public async Task<IActionResult> Details(int? id)
         {
+            //If the ID is not correctly passed
             if (id == null)
             {
                 return NotFound();
             }
 
+            //Get the movie with the parameter ID value
             var movie = await _context.Movie
                 .Include(m => m.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            //Make sure it is not null
             if (movie == null)
             {
                 return NotFound();
             }
 
+            //Return the view of the movies details
             return View(movie);
         }
 
-        // GET: Movies/Details/5
+        /** Method will add a comment to the respective movie that the user is currently on
+         * @param int id: The ID of the movie that we will add the comment to
+         * @param string comment: The comment that was added to the movie
+         */
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddComment(int id, string comment)
@@ -147,11 +163,13 @@ namespace Group_Project.Controllers
                .Include(m => m.Comments)
                .FirstOrDefaultAsync(m => m.Id == id);
 
+            //Assert != null
             if (movie == null)
             {
                 return NotFound();
             }
 
+            //Create a new comment object 
             var newComment = new Comment
             {
                 MediaID = id,
@@ -164,39 +182,53 @@ namespace Group_Project.Controllers
                 movie.Comments = new List<Comment>();
             }
 
+            //Add the comments
             movie.Comments.Add(newComment);
-
             _context.Comment.Add(newComment);
             _context.SaveChanges();
 
+            //Return the updated view
             return View("Details", movie);
         }
 
+        /** Method will remove a comment to the respective movie that the user is currently on
+         * @param int id: The ID of the comment we are going to remove
+         */
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> RemoveComment(int id)
+        public async Task<IActionResult> RemoveComment(int commentId)
         {
+
             // Find the comment by its ID
-            var comment = await _context.Comment.FindAsync(id);
+            var comment = await _context.Comment.FindAsync(commentId);
 
-            //Get the movie
-            var movie = await _context.Movie
-               .Include(m => m.Comments)
-               .FirstOrDefaultAsync(m => m.Id == id);
-
+            //Assert not null
             if (comment == null)
             {
                 return NotFound();
             }
 
-            movie.Comments.Remove(comment);
+            //Get the movie by the mediaID from the comment
+            var movie = await _context.Movie
+               .Include(m => m.Comments)
+               .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
 
+            //Assert not null
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            
+            //Remove comments
+            movie.Comments.Remove(comment);
             _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
 
+            //Return updated view
             return View("Details", movie);
         }
 
+        //Testing method that will wipe all the movies from the database
         public async Task<IActionResult> RemoveAllRecords()
         {
             try
@@ -220,6 +252,13 @@ namespace Group_Project.Controllers
             }
         }
 
+        /** Method will test if the given movie is a new movie in our database
+         * Does this by seeing if the title and desctiption are already in the database
+         * @Param string title: The title of the movie
+         * @Param string description: The description of the movie
+         * @Returns True if the movie is new
+         *          False if the movie is already in the DB
+         **/
         private bool IsNewMovie(string title, string description)
         {
             return !_context.Movie.Any(e => e.Title.Equals(title) && e.Description.Equals(description));
