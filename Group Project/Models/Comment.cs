@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 namespace Group_Project.Models
 {
     public class Comment
@@ -9,9 +10,6 @@ namespace Group_Project.Models
         //Foreign Key to connect comment to show/movie?
         public int MediaID { get; set; }
         public string Text { get; set; }
-
-        //User
-        //Date Posted
 
     }
 }
