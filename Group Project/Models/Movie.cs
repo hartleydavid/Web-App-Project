@@ -26,7 +26,5 @@ namespace Group_Project.Models
         public int BoxOfficeTotal { get; set; }
         public double IMBDScore { get; set; }
         public List<Comment> Comments { get; set; }
-
-
     }
 }

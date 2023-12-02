@@ -23,7 +23,6 @@ namespace Group_Project.Data
         }
 
         public DbSet<Group_Project.Models.Show> Show { get; set; }
-        public DbSet<Group_Project.Models.User> User { get; set; }
         public DbSet<Group_Project.Models.Movie> Movie { get; set; }
         public DbSet<Group_Project.Models.Comment> Comment { get; set; }
     }

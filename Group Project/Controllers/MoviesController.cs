@@ -10,10 +10,11 @@ using Group_Project.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
-
 using RestSharp;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Group_Project.Controllers
 {
@@ -138,6 +139,7 @@ namespace Group_Project.Controllers
             //Get the movie with the parameter ID value
             var movie = await _context.Movie
                 .Include(m => m.Comments)
+                .ThenInclude(comment => comment.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             //Make sure it is not null
@@ -160,8 +162,11 @@ namespace Group_Project.Controllers
         {
             //Get the movie
             var movie = await _context.Movie
-               .Include(m => m.Comments)
-               .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(m => m.Comments)
+                .ThenInclude(comment => comment.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             //Assert != null
             if (movie == null)
@@ -169,12 +174,14 @@ namespace Group_Project.Controllers
                 return NotFound();
             }
 
-            //Create a new comment object 
             var newComment = new Comment
             {
                 MediaID = id,
-                Text = comment
-            };
+                Text = comment,
+                AuthorId = authorId,
+                Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == authorId),
+                DatePosted = DateTime.Now
+        };
 
             // Ensure that the Comments collection is initialized
             if (movie.Comments == null)
@@ -184,7 +191,6 @@ namespace Group_Project.Controllers
 
             //Add the comments
             movie.Comments.Add(newComment);
-            _context.Comment.Add(newComment);
             _context.SaveChanges();
 
             //Return the updated view
@@ -210,8 +216,9 @@ namespace Group_Project.Controllers
 
             //Get the movie by the mediaID from the comment
             var movie = await _context.Movie
-               .Include(m => m.Comments)
-               .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
+                .Include(m => m.Comments)
+                .ThenInclude(comment => comment.Author)
+                .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
 
             //Assert not null
             if (movie == null)
@@ -221,7 +228,6 @@ namespace Group_Project.Controllers
             
             //Remove comments
             movie.Comments.Remove(comment);
-            _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
 
             //Return updated view
@@ -245,7 +251,7 @@ namespace Group_Project.Controllers
                 // Optionally, redirect to another action or return a success message
                 return RedirectToAction("Index", "Movies"); // Redirect to the home page, adjust as needed
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle the exception (log it, show an error message, etc.)
                 return RedirectToAction("Error", "Home");

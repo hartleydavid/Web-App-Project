@@ -25,9 +25,6 @@ namespace Group_Project.Models
         public double IMBDScore { get; set; }
         public int Seasons { get; set; }
         public int Episodes { get; set; }
-
         public List<Comment> Comments { get; set; }
-
-
     }
 }

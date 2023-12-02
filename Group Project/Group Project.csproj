@@ -11,6 +11,14 @@
     <Compile Remove="Data\Migrations\20231201003013_AddAuthorToCommensMigratin.Designer.cs" />
     <Compile Remove="Data\Migrations\20231201010220_CommentInformationMigration.cs" />
     <Compile Remove="Data\Migrations\20231201010220_CommentInformationMigration.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201091530_CommentAuthorMigration.cs" />
+    <Compile Remove="Data\Migrations\20231201091530_CommentAuthorMigration.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201194825_Test.cs" />
+    <Compile Remove="Data\Migrations\20231201194825_Test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201195512_Test.cs" />
+    <Compile Remove="Data\Migrations\20231201195512_Test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201210249_Test.cs" />
+    <Compile Remove="Data\Migrations\20231201210249_Test.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

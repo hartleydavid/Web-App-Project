@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Group_Project.Data;
 using Group_Project.Models;
-
 using Newtonsoft.Json;
 using RestSharp;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Group_Project.Controllers
 {
@@ -41,7 +41,7 @@ namespace Group_Project.Controllers
                 // Optionally, redirect to another action or return a success message
                 return RedirectToAction("Index", "Shows"); // Redirect to the home page, adjust as needed
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle the exception (log it, show an error message, etc.)
                 return RedirectToAction("Error", "Home");
@@ -157,7 +157,10 @@ namespace Group_Project.Controllers
             }
 
             var show = await _context.Show
+                .Include(m => m.Comments)
+                .ThenInclude(c => c.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (show == null)
             {
                 return NotFound();
@@ -177,7 +180,10 @@ namespace Group_Project.Controllers
             //Get the show
             var show = await _context.Show
                .Include(m => m.Comments)
+               .ThenInclude(c => c.Author)
                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             //Assert != null
             if (show == null)
@@ -189,7 +195,10 @@ namespace Group_Project.Controllers
             var newComment = new Comment
             {
                 MediaID = id,
-                Text = comment
+                Text = comment,
+                AuthorId = authorId,
+                Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == authorId),
+                DatePosted = DateTime.Now
             };
 
             // Ensure that the Comments collection is initialized
@@ -200,7 +209,6 @@ namespace Group_Project.Controllers
 
             //Add the comments
             show.Comments.Add(newComment);
-            _context.Comment.Add(newComment);
             _context.SaveChanges();
 
             //Return the updated view
@@ -237,7 +245,6 @@ namespace Group_Project.Controllers
 
             //Remove comments
             show.Comments.Remove(comment);
-            _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
 
             //Return updated view
