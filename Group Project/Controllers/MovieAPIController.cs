@@ -29,6 +29,11 @@ namespace Group_Project.Controllers
         }
 
         // GET: api/MovieAPI/5
+        /// <summary>
+        /// Get a specific item by ID.
+        /// </summary>
+        /// <param name="id">The ID of the item.</param>
+        /// <returns>The requested item.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
