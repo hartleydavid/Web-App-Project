@@ -6,65 +6,50 @@
 
 <h1>Movies</h1>
 
+<style>
+    *,*::after, *::before {
+        box-sizing: border-box;
+    }
+    .container {
+        width: 100%;
+    }
+    .carousel {
+        display: flex;
+        overflow: auto;
+        width: 100%;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+    }
+    .carousel a {
+        padding: .25rem;
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="carousel" id="movieCarousel">
+            @foreach (var item in Model) {
+                <a href="@Url.Action("Details", new { id = item.Id })">
+                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Movie Image" width="500" height="600" />
+                </a>
+            }
+        </div>
+    </div>
+</body>
+
+<!-- Script to allow for scrolling to movie carousel -->
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var carousel = document.getElementById("movieCarousel");
+
+            // Adjust the scrollLeft property based on the scroll wheel movement
+            carousel.addEventListener("wheel", function (e) {
+                e.preventDefault();
+                carousel.scrollLeft += e.deltaY;
+            });
+        });
+</script>
+
+
 <p>
     <a asp-action="RemoveAllRecords">Wipe Database</a> |
 </p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageSrc)
-            </th>
-            <!--<th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>-->
-            <th>
-                @Html.DisplayNameFor(model => model.Genre)
-            </th>
-            <!--<th>
-                @Html.DisplayNameFor(model => model.ReleaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BoxOfficeTotal)
-            </th>-->
-            <th>
-                @Html.DisplayNameFor(model => model.IMBDScore)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-             <th>
-                <a href="@Url.Action("Details", new { id = item.Id })">
-                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Movie Image" width="300" height="400" />
-                </a>
-            </th>
-
-            <!--<td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>-->
-            <td>
-                @Html.DisplayFor(modelItem => item.Genre)
-            </td>
-            <!--<td>
-                @Html.DisplayFor(modelItem => item.FormattedReleaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BoxOfficeTotal)
-            </td>-->
-            <td>
-                @Html.DisplayFor(modelItem => item.IMBDScore)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
