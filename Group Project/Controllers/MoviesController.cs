@@ -10,10 +10,11 @@ using Group_Project.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
-
 using RestSharp;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Group_Project.Controllers
 {
@@ -89,34 +90,40 @@ namespace Group_Project.Controllers
          */
         [Authorize]
         public async Task<IActionResult> Index()
-        {         
-            //Loop to have multiple pages? (Can pull more movies if wanted)
+        {
+            //The string link to the API that we will pull data from, missing page #
+            string apiLink = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=";
+            //The number of pages we will pull from
+            int pageCount = 2;
 
-            //Pull the top rated movies list from the API
-            var options = new RestClientOptions("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1");
-            var client = new RestClient(options);
-            var request = new RestRequest("");
-            request.AddHeader("accept", "application/json");
-            request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
-            var response = await client.GetAsync(request);
-
-            // Deserialize the API response to C# objects
-            dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
-
-            // Process and save data to the database
-            foreach (var movie in ApiData.results)
+            //Loop for the number of pages we want to access from the API
+            for (int i = 1; i <= pageCount; i++)
             {
-                //If this is a new movie, add it to the DB
-                if (IsNewMovie((string)movie.title, (string)movie.overview))
+                //Pull the top rated movies list from the API
+                var options = new RestClientOptions(apiLink + i);
+                var client = new RestClient(options);
+                var request = new RestRequest("");
+                request.AddHeader("accept", "application/json");
+                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
+                var response = await client.GetAsync(request);
+
+                // Deserialize the API response to C# objects
+                dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
+
+                // Process and save data to the database
+                foreach (var movie in ApiData.results)
                 {
-                    Movie newMovie = await CreateMovie((int)movie.id);
-                    // Add the new movie to the context
-                    _context.Movie.Add(newMovie);
+                    //If this is a new movie, add it to the DB
+                    if (IsNewMovie((string)movie.title, (string)movie.overview))
+                    {
+                        Movie newMovie = await CreateMovie((int)movie.id);
+                        // Add the new movie to the context
+                        _context.Movie.Add(newMovie);
+                    }
                 }
             }
-
             // Save changes to the database
-            await _context.SaveChangesAsync();//.ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             //Return the the view of the movies index
             return View(await _context.Movie.ToListAsync());
@@ -138,6 +145,7 @@ namespace Group_Project.Controllers
             //Get the movie with the parameter ID value
             var movie = await _context.Movie
                 .Include(m => m.Comments)
+                .ThenInclude(comment => comment.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             //Make sure it is not null
@@ -160,8 +168,11 @@ namespace Group_Project.Controllers
         {
             //Get the movie
             var movie = await _context.Movie
-               .Include(m => m.Comments)
-               .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(m => m.Comments)
+                .ThenInclude(comment => comment.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             //Assert != null
             if (movie == null)
@@ -169,11 +180,13 @@ namespace Group_Project.Controllers
                 return NotFound();
             }
 
-            //Create a new comment object 
             var newComment = new Comment
             {
                 MediaID = id,
-                Text = comment
+                Text = comment,
+                AuthorId = authorId,
+                Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == authorId),
+                DatePosted = DateTime.Now
             };
 
             // Ensure that the Comments collection is initialized
@@ -184,7 +197,6 @@ namespace Group_Project.Controllers
 
             //Add the comments
             movie.Comments.Add(newComment);
-            _context.Comment.Add(newComment);
             _context.SaveChanges();
 
             //Return the updated view
@@ -210,8 +222,9 @@ namespace Group_Project.Controllers
 
             //Get the movie by the mediaID from the comment
             var movie = await _context.Movie
-               .Include(m => m.Comments)
-               .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
+                .Include(m => m.Comments)
+                .ThenInclude(comment => comment.Author)
+                .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
 
             //Assert not null
             if (movie == null)
@@ -221,7 +234,6 @@ namespace Group_Project.Controllers
             
             //Remove comments
             movie.Comments.Remove(comment);
-            _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
 
             //Return updated view
@@ -245,7 +257,7 @@ namespace Group_Project.Controllers
                 // Optionally, redirect to another action or return a success message
                 return RedirectToAction("Index", "Movies"); // Redirect to the home page, adjust as needed
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle the exception (log it, show an error message, etc.)
                 return RedirectToAction("Error", "Home");

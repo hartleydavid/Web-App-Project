@@ -7,11 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\20231201003013_AddAuthorToCommensMigratin.cs" />
+    <Compile Remove="Data\Migrations\20231201003013_AddAuthorToCommensMigratin.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201010220_CommentInformationMigration.cs" />
+    <Compile Remove="Data\Migrations\20231201010220_CommentInformationMigration.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201091530_CommentAuthorMigration.cs" />
+    <Compile Remove="Data\Migrations\20231201091530_CommentAuthorMigration.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201194825_Test.cs" />
+    <Compile Remove="Data\Migrations\20231201194825_Test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201195512_Test.cs" />
+    <Compile Remove="Data\Migrations\20231201195512_Test.Designer.cs" />
+    <Compile Remove="Data\Migrations\20231201210249_Test.cs" />
+    <Compile Remove="Data\Migrations\20231201210249_Test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.32" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.32" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.32" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />

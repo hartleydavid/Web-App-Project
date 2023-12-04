@@ -4,72 +4,41 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
 <div>
     <h4>Show</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageSrc)
-        </dt>
+        <dt class = "col-sm-2"></dt>
         <dd class = "col-sm-10">
-              <img src="@Html.DisplayFor(model => model.ImageSrc)" alt="Show Image" width="600" height="700" />
+            <img src="@Html.DisplayFor(model => model.ImageSrc)" alt="Show Image" width="600" height="700" />
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReleaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FormattedReleaseDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastAirDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FormattedLastAirDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IMBDScore)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IMBDScore)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Seasons)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Seasons)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Episodes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Episodes)
-        </dd>
-    </dl> </dl> <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.Comments)
-    </dt>
+
+        <dt class = "col-sm-2"> Title </dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.Title) </dd>
+
+        <dt class = "col-sm-2">Shows Description</dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.Description)</dd>
+
+        <dt class = "col-sm-2"> Genre </dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Genre)</dd>
+
+        <dt class = "col-sm-2">Release Date</dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.FormattedReleaseDate)</dd>
+
+        <dt class = "col-sm-2"> Last Date Aired </dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.FormattedLastAirDate) </dd>
+
+        <dt class = "col-sm-2">IMBD Score</dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.IMBDScore)</dd>
+
+        <dt class = "col-sm-2">  Number of Seasons </dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Seasons)</dd>
+
+        <dt class = "col-sm-2"> Number of Episodes</dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Episodes)</dd>
+    </dl>
 </div>
 
-<!-- Comment Section Style -->
 <style>
     .comment-section {
         text-align: center;
@@ -84,8 +53,8 @@
 
     .comments-list li {
         text-align: left;
-        margin-bottom: 15px; /* Adjust the whitespace between comments */
-        overflow: auto; /* Clear the float to prevent layout issues */
+        margin-bottom: 15px;
+        overflow: auto;
     }
 
     .comment-text {
@@ -99,12 +68,11 @@
     }
 
     textarea {
-        width: 80%; /* Adjust the size of the comment box */
+        width: 80%;
         margin-bottom: 10px;
     }
 </style>
 
-<!-- Comment Section -->
 <div class="comment-section">
     <form asp-action="AddComment" method="post">
         <input type="hidden" asp-for="Id" />
@@ -116,15 +84,19 @@
     </form>
 
     <br>
-    @Html.DisplayNameFor(model => model.Comments)
     @if (Model.Comments != null && Model.Comments.Any())
     {
+        @Html.DisplayNameFor(model => model.Comments)
         <ul class="comments-list">
             @foreach (var comment in Model.Comments)
             {
                 <li>
                     <div class="comment-text">
-                        @comment.Text 
+                        @comment.Text
+                        <br/>
+                        <p>
+                            <small>Posted by @comment.Author.FirstName on @comment.DatePosted.ToString("MMMM d, yyyy")</small>
+                        </p>
                     </div>
                     <div class="comment-actions" align="right">
                         <form asp-action="RemoveComment" method="post">

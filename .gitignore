@@ -74,5 +74,5 @@ _[Ss]cripts
 *.nupkg
 *.ncrunchsolution
 *.dot[Cc]over
-*.jfm
 .vs/
+.obj/

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Group_Project.Data;
 using Group_Project.Models;
-
 using Newtonsoft.Json;
 using RestSharp;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Group_Project.Controllers
 {
@@ -41,7 +41,7 @@ namespace Group_Project.Controllers
                 // Optionally, redirect to another action or return a success message
                 return RedirectToAction("Index", "Shows"); // Redirect to the home page, adjust as needed
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Handle the exception (log it, show an error message, etc.)
                 return RedirectToAction("Error", "Home");
@@ -114,35 +114,44 @@ namespace Group_Project.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
+            //The string link to the API that we will pull data from, missing page #
+            string apiLink = "https://api.themoviedb.org/3/tv/top_rated?language=en-US&page=";
+            //The number of pages we will pull from
+            int pageCount = 3;
 
-            //Loop to have multiple pages?
-            var options = new RestClientOptions("https://api.themoviedb.org/3/tv/top_rated?language=en-US&page=1");
-            var client = new RestClient(options);
-            var request = new RestRequest("");
-            request.AddHeader("accept", "application/json");
-            request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
-            var response = await client.GetAsync(request);
-
-
-            // Deserialize the API response to C# objects
-            dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
-
-            // Process and save data to the database
-            foreach (var show in ApiData.results)
+            //Loop for the number of pages we want to access from the API
+            for (int i = 1; i <= pageCount; i++)
             {
-                //If this is a new show, add it to the DB
-                if (IsNewShow((string)show.title, (string)show.overview))
+                //Concate the page number to the link
+                var options = new RestClientOptions(apiLink + i);
+                var client = new RestClient(options);
+                var request = new RestRequest("");
+                request.AddHeader("accept", "application/json");
+                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
+                var response = await client.GetAsync(request);
+
+
+                // Deserialize the API response to C# objects
+                dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
+
+                // Process and save data to the database
+                foreach (var show in ApiData.results)
                 {
-                    // Add the new show to the context
-                    _context.Show.Add(await CreateShow((int)show.id));
+                    //If this is a new show, add it to the DB
+                    if (IsNewShow((string)show.name, (string)show.overview))
+                    {
+                        Show newShow = await CreateShow((int)show.id);
+                        // Add the new show to the context
+                        _context.Show.Add(newShow);
+                    }
                 }
+
             }
-
-
-            // Save changes to the database
-            await _context.SaveChangesAsync();//.ConfigureAwait(false);
-
-            return View(await _context.Show.ToListAsync());
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+            
+                //Return view of all shows
+                return View(await _context.Show.ToListAsync());
         }
         /** Template Details View from scaffolded objects
          * Added .Include() function call for the context of our model
@@ -157,7 +166,10 @@ namespace Group_Project.Controllers
             }
 
             var show = await _context.Show
+                .Include(m => m.Comments)
+                .ThenInclude(c => c.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (show == null)
             {
                 return NotFound();
@@ -177,7 +189,10 @@ namespace Group_Project.Controllers
             //Get the show
             var show = await _context.Show
                .Include(m => m.Comments)
+               .ThenInclude(c => c.Author)
                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             //Assert != null
             if (show == null)
@@ -189,7 +204,10 @@ namespace Group_Project.Controllers
             var newComment = new Comment
             {
                 MediaID = id,
-                Text = comment
+                Text = comment,
+                AuthorId = authorId,
+                Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == authorId),
+                DatePosted = DateTime.Now
             };
 
             // Ensure that the Comments collection is initialized
@@ -200,7 +218,6 @@ namespace Group_Project.Controllers
 
             //Add the comments
             show.Comments.Add(newComment);
-            _context.Comment.Add(newComment);
             _context.SaveChanges();
 
             //Return the updated view
@@ -237,7 +254,6 @@ namespace Group_Project.Controllers
 
             //Remove comments
             show.Comments.Remove(comment);
-            _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
 
             //Return updated view
