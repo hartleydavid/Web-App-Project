@@ -130,7 +130,6 @@ namespace Group_Project.Controllers
                 request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
                 var response = await client.GetAsync(request);
 
-
                 // Deserialize the API response to C# objects
                 dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
@@ -145,13 +144,12 @@ namespace Group_Project.Controllers
                         _context.Show.Add(newShow);
                     }
                 }
-
             }
-                // Save changes to the database
-                await _context.SaveChangesAsync();
+            // Save changes to the database
+            await _context.SaveChangesAsync();
             
-                //Return view of all shows
-                return View(await _context.Show.ToListAsync());
+            //Return view of all shows
+            return View(await _context.Show.ToListAsync());
         }
         /** Template Details View from scaffolded objects
          * Added .Include() function call for the context of our model
@@ -218,10 +216,10 @@ namespace Group_Project.Controllers
 
             //Add the comments
             show.Comments.Add(newComment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             //Return the updated view
-            return View("Details", show);
+            return RedirectToAction("Details", new { id = show.Id });
         }
 
         /** Method will remove a comment to the respective show that the user is currently on
@@ -257,7 +255,7 @@ namespace Group_Project.Controllers
             await _context.SaveChangesAsync();
 
             //Return updated view
-            return View("Details", show);
+            return RedirectToAction("Details", new { id = show.Id });
         }
 
         /** Method will test if the given show is a new show in our database

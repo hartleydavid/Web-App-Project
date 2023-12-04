@@ -197,10 +197,10 @@ namespace Group_Project.Controllers
 
             //Add the comments
             movie.Comments.Add(newComment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             //Return the updated view
-            return View("Details", movie);
+            return RedirectToAction("Details", new { id = movie.Id });
         }
 
         /** Method will remove a comment to the respective movie that the user is currently on
@@ -237,7 +237,7 @@ namespace Group_Project.Controllers
             await _context.SaveChangesAsync();
 
             //Return updated view
-            return View("Details", movie);
+            return RedirectToAction("Details", new { id = movie.Id });
         }
 
         //Testing method that will wipe all the movies from the database
