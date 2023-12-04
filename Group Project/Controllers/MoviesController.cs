@@ -94,7 +94,7 @@ namespace Group_Project.Controllers
             //The string link to the API that we will pull data from, missing page #
             string apiLink = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=";
             //The number of pages we will pull from
-            int pageCount = 3;
+            int pageCount = 2;
 
             //Loop for the number of pages we want to access from the API
             for (int i = 1; i <= pageCount; i++)

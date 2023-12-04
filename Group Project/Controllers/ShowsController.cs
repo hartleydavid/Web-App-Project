@@ -138,10 +138,11 @@ namespace Group_Project.Controllers
                 foreach (var show in ApiData.results)
                 {
                     //If this is a new show, add it to the DB
-                    if (IsNewShow((string)show.title, (string)show.overview))
+                    if (IsNewShow((string)show.name, (string)show.overview))
                     {
+                        Show newShow = await CreateShow((int)show.id);
                         // Add the new show to the context
-                        _context.Show.Add(await CreateShow((int)show.id));
+                        _context.Show.Add(newShow);
                     }
                 }
 
