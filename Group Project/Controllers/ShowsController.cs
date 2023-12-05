@@ -24,7 +24,7 @@ namespace Group_Project.Controllers
             _context = context;
         }
 
-        //Used in testing
+        // Used in testing
         public async Task<IActionResult> RemoveAllRecords()
         {
             try
@@ -59,13 +59,13 @@ namespace Group_Project.Controllers
         public string GetGenresString(dynamic genreList)
         {
             string myGenres = "";
-            //Foreach value in the list
+            // Foreach value in the list
             foreach (var genre in genreList)
             {
-                //Add the value to the string
+                // Add the value to the string
                 myGenres += genre.name + ", ";
             }
-            //Return genres
+            // Return genres
             return myGenres[0..^2];
         }
 
@@ -86,10 +86,10 @@ namespace Group_Project.Controllers
             request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MGVjNDc0YTJhZjVhNjMzZTUxOWM1NWY4NGYxYTAxMCIsInN1YiI6IjY1NWQ0OWZmZmFiM2ZhMDBmZWNjZjk4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EvJfo5-I1AS2ro4I8mWfrzSHKUEuHQJQR_KolK-WSHs");
             var response = await client.GetAsync(request);
 
-            //Convert to useable data
+            // Convert to useable data
             dynamic ApiData = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
-            //Pull the data that we need
+            // Pull the data that we need
             var newShow = new Show
             {
                 Title = ApiData.name,
@@ -114,15 +114,15 @@ namespace Group_Project.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            //The string link to the API that we will pull data from, missing page #
+            // The string link to the API that we will pull data from, missing page #
             string apiLink = "https://api.themoviedb.org/3/tv/top_rated?language=en-US&page=";
-            //The number of pages we will pull from
+            // The number of pages we will pull from
             int pageCount = 3;
 
-            //Loop for the number of pages we want to access from the API
+            // Loop for the number of pages we want to access from the API
             for (int i = 1; i <= pageCount; i++)
             {
-                //Concate the page number to the link
+                // Concate the page number to the link
                 var options = new RestClientOptions(apiLink + i);
                 var client = new RestClient(options);
                 var request = new RestRequest("");
@@ -136,7 +136,7 @@ namespace Group_Project.Controllers
                 // Process and save data to the database
                 foreach (var show in ApiData.results)
                 {
-                    //If this is a new show, add it to the DB
+                    // If this is a new show, add it to the DB
                     if (IsNewShow((string)show.name, (string)show.overview))
                     {
                         Show newShow = await CreateShow((int)show.id);
@@ -148,7 +148,7 @@ namespace Group_Project.Controllers
             // Save changes to the database
             await _context.SaveChangesAsync();
             
-            //Return view of all shows
+            // Return view of all shows
             return View(await _context.Show.ToListAsync());
         }
         /** Template Details View from scaffolded objects
@@ -184,21 +184,20 @@ namespace Group_Project.Controllers
         [Authorize]
         public async Task<IActionResult> AddComment(int id, string comment)
         {
-            //Get the show
+            // Get the show
             var show = await _context.Show
                .Include(m => m.Comments)
-               .ThenInclude(c => c.Author)
                .FirstOrDefaultAsync(m => m.Id == id);
 
             var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //Assert != null
+            // Assert != null
             if (show == null)
             {
                 return NotFound();
             }
 
-            //Create a new comment object 
+            // Create a new comment object 
             var newComment = new Comment
             {
                 MediaID = id,
@@ -214,11 +213,11 @@ namespace Group_Project.Controllers
                 show.Comments = new List<Comment>();
             }
 
-            //Add the comments
+            // Add the comments
             show.Comments.Add(newComment);
             await _context.SaveChangesAsync();
 
-            //Return the updated view
+            // Return the updated view
             return RedirectToAction("Details", new { id = show.Id });
         }
 
@@ -233,28 +232,28 @@ namespace Group_Project.Controllers
             // Find the comment by its ID
             var comment = await _context.Comment.FindAsync(commentId);
 
-            //Assert not null
+            // Assert not null
             if (comment == null)
             {
                 return NotFound();
             }
 
-            //Get the show by the mediaID from the comment
+            // Get the show by the mediaID from the comment
             var show = await _context.Show
                .Include(m => m.Comments)
                .FirstOrDefaultAsync(m => m.Id == comment.MediaID);
 
-            //Assert not null
+            // Assert not null
             if (show == null)
             {
                 return NotFound();
             }
 
-            //Remove comments
+            // Remove comments
             show.Comments.Remove(comment);
             await _context.SaveChangesAsync();
 
-            //Return updated view
+            // Return updated view
             return RedirectToAction("Details", new { id = show.Id });
         }
 
