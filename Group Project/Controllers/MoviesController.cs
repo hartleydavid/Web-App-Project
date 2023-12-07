@@ -26,7 +26,31 @@ namespace Group_Project.Controllers
         {
             _context = context;
         }
-      
+
+        //Testing method that will wipe all the movies from the database
+        public async Task<IActionResult> RemoveAllRecords()
+        {
+            try
+            {
+                // Get all records from the database
+                var allRecords = await _context.Movie.ToListAsync();
+
+                // Remove each record
+                _context.Movie.RemoveRange(allRecords);
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                // Optionally, redirect to another action or return a success message
+                return RedirectToAction("Index", "Movies"); // Redirect to the home page, adjust as needed
+            }
+            catch (Exception)
+            {
+                // Handle the exception (log it, show an error message, etc.)
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
         /** Method will search through the genre array from the API
          * and parse the data into a string listing each genre.
          * Removes the trailing comma on method return
@@ -240,29 +264,6 @@ namespace Group_Project.Controllers
             return View("Details", movie);
         }
 
-        //Testing method that will wipe all the movies from the database
-        public async Task<IActionResult> RemoveAllRecords()
-        {
-            try
-            {
-                // Get all records from the database
-                var allRecords = await _context.Movie.ToListAsync();
-
-                // Remove each record
-                _context.Movie.RemoveRange(allRecords);
-
-                // Save changes to the database
-                await _context.SaveChangesAsync();
-
-                // Optionally, redirect to another action or return a success message
-                return RedirectToAction("Index", "Movies"); // Redirect to the home page, adjust as needed
-            }
-            catch (Exception)
-            {
-                // Handle the exception (log it, show an error message, etc.)
-                return RedirectToAction("Error", "Home");
-            }
-        }
 
         /** Method will test if the given movie is a new movie in our database
          * Does this by seeing if the title and desctiption are already in the database
