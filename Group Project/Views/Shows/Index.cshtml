@@ -5,50 +5,7 @@
 }
 
 <h1>Shows</h1>
-
-<style>
-    *,*::after, *::before {
-        box-sizing: border-box;
-    }
-    .container {
-        width: 100%;
-    }
-    .carousel {
-        display: flex;
-        overflow: auto;
-        width: 100%;
-        scroll-snap-type: x mandatory;
-        -ms-overflow-style: none;
-    }
-    .carousel a {
-        padding: .25rem;
-    }
-</style>
-<body>
-    <div class="container">
-        <div class="carousel" id="showCarousel">
-            @foreach (var item in Model) {
-                <a href="@Url.Action("Details", new { id = item.Id })">
-                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Movie Image" width="500" height="600" />
-                </a>
-            }
-        </div>
-    </div>
-</body>
-
-<!-- Script to allow for scrolling to movie carousel -->
-<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var carousel = document.getElementById("showCarousel");
-
-            // Adjust the scrollLeft property based on the scroll wheel movement
-            carousel.addEventListener("wheel", function (e) {
-                e.preventDefault();
-                carousel.scrollLeft += e.deltaY;
-            });
-        });
-</script>
-
+<link rel="stylesheet" href="~/css/content-grid.css">
 
 <p>
     <a asp-action="RemoveAllRecords">Wipe Database</a> |
