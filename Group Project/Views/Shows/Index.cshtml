@@ -10,3 +10,20 @@
 <p>
     <a asp-action="RemoveAllRecords">Wipe Database</a> |
 </p>
+
+<body>
+    <div class="container">
+        @foreach (var item in Model)
+        {
+            <div class="content">
+                <a href="@Url.Action("Details", new { id = item.Id })">
+                    <img src="@Html.DisplayFor(modelItem => item.ImageSrc)" alt="Show Image" width="300" height="400" />
+                    <div class="overlay">
+                        <div class="text">@Html.DisplayFor(modelItem => item.Title)</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+
+</body>
