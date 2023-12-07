@@ -10,12 +10,12 @@
         grid-template-columns: repeat(4, minmax(300px, 1fr));
     }
 
-    .showlist {
+    .content {
         position: relative;
         padding: .25em;
     }
 
-    .showlist:hover a .overlay {
+    .content:hover a .overlay {
         opacity: .7;
     }
 
@@ -24,7 +24,7 @@
         width: 100%;
     }
 
-    .showlist a .overlay {
+    .content a .overlay {
         position: absolute;
         top: 0;
         bottom: 0;
