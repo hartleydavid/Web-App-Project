@@ -1,0 +1,120 @@
+﻿@model Group_Project.Models.Show
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <h4>Show</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2"></dt>
+        <dd class = "col-sm-10">
+            <img src="@Html.DisplayFor(model => model.ImageSrc)" alt="Show Image" width="600" height="700" />
+        </dd>
+
+        <dt class = "col-sm-2"> Title </dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.Title) </dd>
+
+        <dt class = "col-sm-2">Shows Description</dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.Description)</dd>
+
+        <dt class = "col-sm-2"> Genre </dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Genre)</dd>
+
+        <dt class = "col-sm-2">Release Date</dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.FormattedReleaseDate)</dd>
+
+        <dt class = "col-sm-2"> Last Date Aired </dt>
+        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.FormattedLastAirDate) </dd>
+
+        <dt class = "col-sm-2">IMBD Score</dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.IMBDScore)</dd>
+
+        <dt class = "col-sm-2">  Number of Seasons </dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Seasons)</dd>
+
+        <dt class = "col-sm-2"> Number of Episodes</dt>
+        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Episodes)</dd>
+    </dl>
+</div>
+
+<style>
+    .comment-section {
+        text-align: center;
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+    .comments-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .comments-list li {
+        text-align: left;
+        margin-bottom: 15px;
+        overflow: auto;
+    }
+
+    .comment-text {
+        float: left;
+        width: 70%;
+    }
+
+    .comment-actions {
+        float: right;
+        width: 30%;
+    }
+
+    textarea {
+        width: 80%;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="comment-section">
+    <form asp-action="AddComment" method="post">
+        <input type="hidden" asp-for="Id" />
+        <label for="Comment">Add your comment:</label>
+        <br>
+        <textarea name="Comment" required></textarea>
+        <br>
+        <button type="submit">Submit Comment</button>
+    </form>
+
+    <br>
+    @if (Model.Comments != null && Model.Comments.Any())
+    {
+        @Html.DisplayNameFor(model => model.Comments)
+        <ul class="comments-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <li>
+                    <div class="comment-text">
+                        @comment.Text
+                        <br/>
+                        <p>
+                            <small>Posted by @comment.Author.FirstName on @comment.DatePosted.ToString("MMMM d, yyyy")</small>
+                        </p>
+                    </div>
+                    <div class="comment-actions" align="right">
+                        <form asp-action="RemoveComment" method="post">
+                            <input type="hidden" name="commentId" value="@comment.Id" />
+                            <button type="submit">Remove Comment</button>
+                        </form>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No comments yet.</p>
+    }
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
