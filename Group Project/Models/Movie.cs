@@ -22,6 +22,8 @@ namespace Group_Project.Models
         {
             get { return ReleaseDate.ToString("yyyy-MM-dd"); }
         }
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
+
         public string ImageSrc { get; set; }
         public int BoxOfficeTotal { get; set; }
         public double IMBDScore { get; set; }

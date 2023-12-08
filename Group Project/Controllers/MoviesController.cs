@@ -144,6 +144,7 @@ namespace Group_Project.Controllers
 
             //Get the movie with the parameter ID value
             var movie = await _context.Movie
+                .Include(m=>m.Likes)
                 .Include(m => m.Comments)
                 .ThenInclude(comment => comment.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -201,6 +202,34 @@ namespace Group_Project.Controllers
 
             //Return the updated view
             return View("Details", movie);
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult>  Like(int? id)
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+
+            var existingLike = _context.Likes
+                .FirstOrDefault(l => l.MovieId == id && l.UserId == userId);
+
+            if (existingLike == null)
+            {
+                // User has not liked the movie yet, create a new like
+                var like = new Like
+                {
+                    MovieId = id.Value,
+                    UserId = userId,
+                    LikedAt = DateTime.Now
+                };
+
+                _context.Likes.Add(like);
+                _context.SaveChanges();
+            }
+
+
+
+            return RedirectToAction("Details", new { id });
         }
 
         /** Method will remove a comment to the respective movie that the user is currently on
