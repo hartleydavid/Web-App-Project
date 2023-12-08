@@ -1,77 +1,78 @@
 ﻿@model Group_Project.Models.Show
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<div>
-    <h4>Show</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2"></dt>
-        <dd class = "col-sm-10">
-            <img src="@Html.DisplayFor(model => model.ImageSrc)" alt="Show Image" width="600" height="700" />
-        </dd>
-
-        <dt class = "col-sm-2"> Title </dt>
-        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.Title) </dd>
-
-        <dt class = "col-sm-2">Shows Description</dt>
-        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.Description)</dd>
-
-        <dt class = "col-sm-2"> Genre </dt>
-        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Genre)</dd>
-
-        <dt class = "col-sm-2">Release Date</dt>
-        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.FormattedReleaseDate)</dd>
-
-        <dt class = "col-sm-2"> Last Date Aired </dt>
-        <dd class = "col-sm-10"> @Html.DisplayFor(model => model.FormattedLastAirDate) </dd>
-
-        <dt class = "col-sm-2">IMBD Score</dt>
-        <dd class = "col-sm-10">@Html.DisplayFor(model => model.IMBDScore)</dd>
-
-        <dt class = "col-sm-2">  Number of Seasons </dt>
-        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Seasons)</dd>
-
-        <dt class = "col-sm-2"> Number of Episodes</dt>
-        <dd class = "col-sm-10">@Html.DisplayFor(model => model.Episodes)</dd>
-    </dl>
-</div>
-
 <style>
+    .image {
+        float: left;
+        width: 45%;
+    }
+    .info {
+        float: right;
+        width: 55%;
+    }
     .comment-section {
         text-align: center;
         margin-top: 20px;
         padding: 20px;
     }
-
     .comments-list {
         list-style-type: none;
         padding: 0;
     }
-
-    .comments-list li {
-        text-align: left;
-        margin-bottom: 15px;
-        overflow: auto;
-    }
-
+        .comments-list li {
+            text-align: left;
+            margin-bottom: 15px;
+            overflow: auto;
+        }
     .comment-text {
         float: left;
         width: 70%;
     }
-
     .comment-actions {
         float: right;
         width: 30%;
     }
-
     textarea {
         width: 80%;
         margin-bottom: 10px;
     }
 </style>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <dl class="row">
+        <div class="image">
+            <dt class="col-sm-2"></dt>
+            <dd class="col-sm-10"><img src="@Html.DisplayFor(model => model.ImageSrc)" alt="Show Image" width="450" height="675" /></dd>
+        </div>
+        <div class="info">
+            <h1>@Html.DisplayFor(model => model.Title)</h1>
+
+            <dt>Show Description</dt>
+            <dd>@Html.DisplayFor(model => model.Description)</dd>
+
+            <dt>Genre</dt>
+            <dd>@Html.DisplayFor(model => model.Genre)</dd>
+
+            <dt>Release Date</dt>
+            <dd>@Html.DisplayFor(model => model.FormattedReleaseDate)</dd>
+
+            <dt>Last Air Date</dt>
+            <dd>$@Html.DisplayFor(model => model.FormattedLastAirDate)</dd>
+
+            <dt>IMDB Score</dt>
+            <dd>@Html.DisplayFor(model => model.IMBDScore)</dd>
+
+            <dt>Number of Seasons</dt>
+            <dd>@Html.DisplayFor(model => model.Seasons)</dd>
+
+            <dt>Number of Episodes</dt>
+            <dd>@Html.DisplayFor(model => model.Episodes)</dd>
+        </div>
+    </dl>
+</div>
 
 <div class="comment-section">
     <form asp-action="AddComment" method="post">
@@ -113,7 +114,6 @@
         <p>No comments yet.</p>
     }
 </div>
-
 
 <div>
     <a asp-action="Index">Back to List</a>
