@@ -24,7 +24,7 @@ namespace Group_Project.Controllers
             _context = context;
         }
 
-        // Used in testing
+        // Used in testing. Removes all records from the database
         public async Task<IActionResult> RemoveAllRecords()
         {
             try
