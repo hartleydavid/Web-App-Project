@@ -1,4 +1,9 @@
-﻿@model Group_Project.Models.Movie
+@model Group_Project.Models.Movie
+
+@{
+    ViewData["Title"] = "Details";
+}
+
 
 <style>
     .image {
@@ -37,9 +42,6 @@
     }
 </style>
 
-@{
-    ViewData["Title"] = "Details";
-}
 
 <div>
     <dl class="row">
@@ -64,9 +66,15 @@
         
             <dt>IMDB Score</dt>
             <dd>@Html.DisplayFor(model => model.IMBDScore)</dd>
+            <dt class="col-sm-2">Likes </dt>
+            <dd class="col-sm-10"> @Model.Likes.Count</dd>
         </div>
     </dl>
+    <form method="post" asp-action="Like" asp-route-id="@Model.Id">
+        <button type="submit">Like</button>
+    </form>
 </div>
+
 <div class="comment-section">
     <form asp-action="AddComment" method="post">
         <input type="hidden" asp-for="Id" />
